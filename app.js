@@ -3,25 +3,33 @@ const bodyParser = require("body-parser")
 
 const app = express()
 
+let tasks = []
+
+app.use(bodyParser.urlencoded({extended: true}))
+
 app.set("view engine", "ejs")
 
 
 app.get("/", function(req, res){
 
     let today = new Date()
-    let currentDay = today.getDay();
-    let weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+   
+    const options = {
+        weekday: "long",
+        day: "numeric",
+        month: "long"
+    }
 
-    let day = weekdays[currentDay]
+    let day = today.toLocaleDateString("en-US", options)
+    res.render("list", {kindOfDay: day, newListItem: tasks})
+})
 
-    // if (currentDay === 6 || currentDay === 0) { 
-    //     day = "Weekend"
-         
-    // } else {
-    //     day = "Weekday"
-    // }
+app.post("/", function (req, res){
+    let task = req.body.addTask
+    tasks.push(task)
 
-    res.render("list", {kindOfDay: day})
+    res.redirect("/")
+
 })
 
 app.listen(3000, function(){
