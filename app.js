@@ -4,6 +4,7 @@ const bodyParser = require("body-parser")
 const app = express()
 
 let tasks = []
+let works = []
 
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(express.static("public"))
@@ -22,15 +23,24 @@ app.get("/", function(req, res){
     }
 
     let day = today.toLocaleDateString("en-US", options)
-    res.render("list", {kindOfDay: day, newListItems: tasks})
+    res.render("list", {listTitle: day, newListItems: tasks})
 })
 
 app.post("/", function (req, res){
     let task = req.body.addTask
-    tasks.push(task)
 
-    res.redirect("/")
+    if (req.body.list === "Work") {
+        works.push(task)
+        res.redirect("/work")
+    } else {
+        tasks.push(task)
+        res.redirect("/")
+    } 
+})
 
+
+app.get("/work", function (req, res){
+    res.render("list", {listTitle: "Work", newListItems: works})
 })
 
 app.listen(3000, function(){
